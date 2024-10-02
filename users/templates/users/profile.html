@@ -1,0 +1,35 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+
+<h2>Bienvenido, {{ user.username }}</h2>
+
+<!-- Comprobacion del tipo de usuario autenticado -->
+{% if user.is_superuser %}
+    <strong>¡Eres el superusuario!</strong> Tienes acceso total a la administración del sitio.
+{% else %}
+    <p>Esta es tu página de perfil. Aquí puedes ver tus detalles.</p>
+{% endif %}
+
+<!-- Mostrar mensajes -->
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<p><strong>Usuario:</strong> {{ user.username }}</p>
+<p><strong>Correo electrónico:</strong> {{ user.email }}</p>
+
+<!-- Enlace al listado de libros -->
+<p><a href="{% url 'gestion_libros:libro_list' %}" class="btn btn-primary">Ver listado de libros</a></p>
+
+<!-- Botón de logout -->
+<form action="{% url 'users:logout' %}" method="post"> 
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Cerrar sesión</button>
+</form>
+
+{% endblock %}

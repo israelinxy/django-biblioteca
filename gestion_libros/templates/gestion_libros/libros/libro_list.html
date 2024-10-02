@@ -1,0 +1,115 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<h2>Listado de Libros</h2>
+
+{% if messages %}
+    <div class="alert-container">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% if user.is_superuser %}
+    <p><a href="{% url 'gestion_libros:libro_create' %}" class="btn btn-primary">Añadir nuevo Libro</a></p>
+
+    <form method="GET" action="{% url 'gestion_libros:libro_list' %}">
+        <input type="text" name="q" placeholder="Buscar por título, autor, apellido, editorial" value="{{ request.GET.q }}">
+        <button type="submit" class="btn btn-primary">Buscar</button>
+    </form>
+
+    {% if request.GET.q or request.GET.categoria %}
+    <p><a href="{% url 'gestion_libros:libro_list' %}" class="btn btn-secondary">Volver a la lista completa</a></p>
+    {% endif %}
+
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Autor</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for libro in libros %}
+            <tr>
+                <td>{{ libro.titulo }}</td>
+                <td>{{ libro.autor }}</td>                
+                <td>
+                    <!-- Botón de editar libro -->
+                    <a href="{% url 'gestion_libros:libro_edit' libro.id %}" class="btn btn-warning">Editar</a>
+
+                    <!-- Botón de eliminar que redirige a la vista de confirmación -->
+                    <a href="{% url 'gestion_libros:libro_confirm_delete' libro.id %}" class="btn btn-danger">Eliminar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if request.GET.q or request.GET.categoria %}
+    <p><a href="{% url 'gestion_libros:libro_list' %}" class="btn btn-secondary">Volver a la lista completa</a></p>
+    {% endif %}
+
+    <p><a href="{% url 'gestion_libros:libro_create' %}" class="btn btn-primary">Añadir nuevo Libro</a></p>
+{% elif user.is_authenticated %}
+
+    <form method="GET" action="{% url 'gestion_libros:libro_list' %}">
+        <input type="text" name="q" placeholder="Buscar por título, autor, apellido, editorial" value="{{ request.GET.q }}">
+        <button type="submit" class="btn btn-primary">Buscar</button>
+    </form>
+
+    {% if request.GET.q or request.GET.categoria %}
+    <p><a href="{% url 'gestion_libros:libro_list' %}" class="btn btn-secondary">Volver a la lista completa</a></p>
+    {% endif %}
+
+    <table>
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Autor</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for libro in libros %}
+            <tr>
+                <td>{{ libro.titulo }}</td>
+                <td>{{ libro.autor }}</td>               
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if request.GET.q or request.GET.categoria %}
+    <p><a href="{% url 'gestion_libros:libro_list' %}" class="btn btn-secondary">Volver a la lista completa</a></p>
+    {% endif %}
+
+{% else %}
+    <p>Debes iniciar sesión para ver el listado de libros.</p>
+    <p><a href="{% url 'login' %}">Iniciar sesión</a></p>
+{% endif %}
+
+<p><a href="{% url 'users:profile' %}">Volver al Perfil</a></p>
+
+<!-- Scripts para jQuery y jQuery UI para autocompletar -->
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+
+<script>
+    $(function() {
+        // Autocompletado usando jQuery UI
+        $("#search").autocomplete({
+            source: "{% url 'gestion_libros:autocomplete_libros' %}",  // Vista que devuelve los resultados
+            minLength: 2  // Comenzar a autocompletar después de 2 caracteres
+        });
+    });
+</script
+
+{% endblock %}
+
+

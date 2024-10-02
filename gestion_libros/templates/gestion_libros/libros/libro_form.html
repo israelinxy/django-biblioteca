@@ -1,0 +1,17 @@
+{% extends 'base/base.html' %}
+
+{% block title %}{{ libro.id|default:"Agregar Libro" }}{% endblock %}
+
+{% block content %}
+
+<h2>{% if libro.id %}Editar Libro{% else %}Agregar Libro{% endif %}</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Guardar</button>
+</form>
+
+<p><a href="{% url 'gestion_libros:libro_list' %}">Cancelar</a></p>
+
+{% endblock %}

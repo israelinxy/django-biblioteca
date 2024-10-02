@@ -1,0 +1,23 @@
+{% extends "base/base.html" %}
+
+{% block content %}
+
+<h2>Registrarse</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.non_field_errors }}  <!-- Para errores generales del formulario -->
+    
+    <!-- Recorre los campos y los renderiza sin mostrar los textos de ayuda -->
+    {% for field in form %}
+        <div class="mb-3">
+            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+            {{ field }}  <!-- Renderiza el campo -->
+            {{ field.errors }}  <!-- Muestra errores específicos del campo -->
+        </div>
+    {% endfor %}
+
+    <button type="submit" class="btn btn-primary">Registrarse</button>
+</form>
+
+{% endblock %}

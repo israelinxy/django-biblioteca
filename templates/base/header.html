@@ -1,0 +1,6 @@
+<h1>Bienvenido a la Biblioteca</h1>
+{% if usuario_logeado %}
+    <p>Usuario logueado: {{ usuario_logeado.username }}</p>
+{% else %}
+    <p>No hay ningún usuario logueado. Inicia sesión.</p>
+{% endif %}

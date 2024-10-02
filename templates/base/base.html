@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Mi Biblioteca{% endblock %}</title>
+</head>
+<body>
+    <header>
+        {% include 'base/header.html' %}
+    </header>
+    
+    <nav>
+        {% include 'base/navbar.html' %}
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        {% include 'base/footer.html' %}
+    </footer>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>
