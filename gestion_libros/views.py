@@ -13,13 +13,23 @@ def is_admin(user):
 
 
 @login_required
-# Vista para listar libros
 def libro_list(request):
     query = request.GET.get(
         "q"
     )  # Capturamos el término de búsqueda desde el cuadro de búsqueda
+    sort_by = request.GET.get(
+        "sort", "titulo"
+    )  # Capturamos el criterio de ordenación de la URL (por defecto 'titulo')
+    order = request.GET.get(
+        "order", "asc"
+    )  # Ascendente o descendente, por defecto ascendente
+
+    categoria_id = request.GET.get("categoria")  # Capturar filtro de categoría
+
+    # Obtener la lista completa de libros
     libros = Libro.objects.all()
 
+    # Filtrado por términos de búsqueda si existe
     if query:
         libros = libros.filter(
             Q(titulo__icontains=query)  # Búsqueda por título
@@ -28,11 +38,46 @@ def libro_list(request):
             | Q(editorial__nombre__icontains=query)  # Búsqueda por editorial
         )
 
-    categorias = Categoria.objects.all()  # Obtener las categorías para los filtros
+    # Ordenación de libros
+    valid_sort_fields = {
+        "titulo": "titulo",
+        "fecha_publicacion": "fecha_publicacion",
+        "editorial": "editorial__nombre",
+        "categoria": "categoria__nombre",
+    }
+
+    # Comprobamos si el campo de ordenación es válido, si no, lo ajustamos a 'titulo'
+    if sort_by in valid_sort_fields:
+        sort_field = valid_sort_fields[sort_by]
+    else:
+        sort_field = "titulo"
+
+    # Añadimos el prefijo '-' para ordenar de manera descendente si se especifica
+    if order == "desc":
+        sort_field = f"-{sort_field}"
+
+    # Ordenamos los libros según el campo especificado
+    libros = libros.order_by(sort_field)
+
+    # Obtener todas las categorías para los filtros
+    categorias = Categoria.objects.all()
+
+    # Filtrar por categoría si el usuario selecciona una
+    if categoria_id:
+        libros = libros.filter(categoria__id=categoria_id)
+
+    # Renderizamos el template pasando la lista de libros, el criterio de ordenación y las categorías
     return render(
         request,
         "gestion_libros/libros/libro_list.html",
-        {"libros": libros, "categorias": categorias},
+        {
+            "libros": libros,
+            "categorias": categorias,
+            "sort_by": sort_by,
+            "order": order,
+            "query": query,
+            "categoria_seleccionada": categoria_id,
+        },
     )
 
 
@@ -95,18 +140,3 @@ def libro_confirm_delete(request, id):
     return render(
         request, "gestion_libros/libros/libro_confirm_delete.html", {"libro": libro}
     )
-
-
-# Vista para autocompletado
-def autocomplete_libros(request):
-    if "term" in request.GET:
-        query = request.GET.get("term")
-        libros = Libro.objects.filter(
-            Q(titulo__icontains=query)
-            | Q(autor__nombre__icontains=query)
-            | Q(autor__apellido__icontains=query)
-            | Q(editorial__nombre__icontains=query)
-        )
-        suggestions = list(libros.values_list("titulo", flat=True))
-        return JsonResponse(suggestions, safe=False)
-    return JsonResponse([], safe=False)

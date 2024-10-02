@@ -29,7 +29,4 @@ urlpatterns = [
         views.libro_confirm_delete,
         name="libro_confirm_delete",
     ),  # Ruta para confirmar la eliminacion de un libro
-    path(
-        "autocomplete/", views.autocomplete_libros, name="autocomplete_libros"
-    ),  # Ruta para el autocompletado
 ]
