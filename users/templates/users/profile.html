@@ -26,6 +26,11 @@
 <!-- Enlace al listado de libros -->
 <p><a href="{% url 'gestion_libros:libro_list' %}" class="btn btn-primary">Ver listado de libros</a></p>
 
+{% if user.is_superuser %}
+<!-- Enlace a las estadísticas de libros -->
+<p><a href="{% url 'gestion_libros:libro_estadistics' %}" class="btn btn-primary">Ver estadísticas de libros</a></p>
+{% endif %}
+
 <!-- Botón de logout -->
 <form action="{% url 'users:logout' %}" method="post"> 
     {% csrf_token %}

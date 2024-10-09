@@ -38,6 +38,7 @@ class Libro(models.Model):
         null=True,
         blank=True,
     )
+    año_compra = models.PositiveIntegerField(null=True, blank=True)
 
     def __str__(self):
         return self.titulo

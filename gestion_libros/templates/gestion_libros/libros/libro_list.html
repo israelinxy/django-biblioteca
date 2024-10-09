@@ -1,5 +1,7 @@
 {% extends 'base/base.html' %}
 
+{% block title %}Listado Libros{% endblock %}
+
 {% block content %}
 <h2>Listado de Libros</h2>
 
@@ -79,9 +81,19 @@
                             {% if order == 'asc' %} ↑ {% else %} ↓ {% endif %}
                         {% endif %}
                     </a>
+                </th>                
+                
+                {% if user.is_superuser %}
+                <!-- Ordenar por Año de compra -->
+                <th>
+                    <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.categoria %}categoria={{ request.GET.categoria }}&{% endif %}sort=año_compra&order={% if sort_by == 'año_compra' and order == 'asc' %}desc{% else %}asc{% endif %}">
+                        Año Compra
+                        {% if sort_by == 'año_compra' %}
+                            {% if order == 'asc' %} ↑ {% else %} ↓ {% endif %}
+                        {% endif %}
+                    </a>
                 </th>
 
-                {% if user.is_superuser %}
                 <th>Acciones</th>
                 {% endif %}
             </tr>
@@ -92,8 +104,9 @@
                 <td>{{ libro.titulo }}</td>
                 <td>{{ libro.fecha_publicacion }}</td>
                 <td>{{ libro.editorial.nombre }}</td>
-                <td>{{ libro.categoria.nombre }}</td>
+                <td>{{ libro.categoria.nombre }}</td>                
                 {% if user.is_superuser %}
+                <td>{{ libro.año_compra|default_if_none:"" }}</td>
                 <td>
                     <!-- Botón de editar libro -->
                     <a href="{% url 'gestion_libros:libro_edit' libro.id %}" class="btn btn-warning">Editar</a>
@@ -114,6 +127,7 @@
     {% if user.is_superuser %}
     <p><a href="{% url 'gestion_libros:libro_create' %}" class="btn btn-primary">Añadir nuevo Libro</a></p>
     {% endif %}
+
 {% else %}
     <p>Debes iniciar sesión para ver el listado de libros.</p>
     <p><a href="{% url 'login' %}">Iniciar sesión</a></p>

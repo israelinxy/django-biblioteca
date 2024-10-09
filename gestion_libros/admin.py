@@ -12,6 +12,7 @@ class LibroAdmin(admin.ModelAdmin):
         "fecha_publicacion",
         "editorial",
         "isbn",
+        "año_compra",
     )
     search_fields = (
         "titulo",

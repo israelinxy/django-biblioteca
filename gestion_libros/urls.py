@@ -6,6 +6,7 @@ from .views import (
     libro_edit,
     libro_delete,
     libro_confirm_delete,
+    libro_estadistics,
 )
 
 
@@ -29,4 +30,9 @@ urlpatterns = [
         views.libro_confirm_delete,
         name="libro_confirm_delete",
     ),  # Ruta para confirmar la eliminacion de un libro
+    path(
+        "estadisticas/",
+        views.libro_estadistics,
+        name="libro_estadistics",
+    ),  # Ruta para ver las estadísticas de los libros
 ]

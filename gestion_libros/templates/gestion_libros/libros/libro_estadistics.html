@@ -1,0 +1,283 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Estadísticas Libros{% endblock %}
+
+{% block content %}
+
+<h2>Estadísticas de Libros</h2>
+
+{% if user.is_superuser %}
+    <!-- Contadores para el superusuario -->
+    <div class="superuser-info">
+        <h3>Estadísticas</h3>
+        <p>Total de libros en la base de datos: <strong>{{ total_libros }}</strong></p>
+        <h4>Libros por categoría:</h4>
+        <ul>
+            {% for categoria in libros_por_categoria %}
+                <li>{{ categoria.nombre }}: <strong>{{ categoria.total_libros }}</strong></li>
+            {% endfor %}
+        </ul>
+        <h4>Libros comprados por año:</h4>
+        <ul>
+            {% for item in libros_por_año_compra %}
+                <li>Año {{ item.año_compra }}: <strong>{{ item.total_libros }}</strong></li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+<!-- Menú Desplegable para seleccionar el gráfico -->
+<div>
+    <label for="graficoSelector">Selecciona un gráfico:</label>
+    <select id="graficoSelector" onchange="cambiarGrafico()">
+        <option value="categoria">Por Categoría</option>
+        <option value="año">Por Año de Compra</option>
+    </select>
+</div>
+
+<!-- Contenido de Gráficos -->
+<div id="categoria" class="grafico-content">
+    <h3>Gráfico de Barras por Categoría</h3>
+    <canvas id="miGraficoBarra" style="max-width: 500px; max-height: 300px;"></canvas>
+    <h3>Gráfico de Líneas por Categoría</h3>
+    <canvas id="miGraficoLineas" style="max-width: 500px; max-height: 300px;"></canvas>
+    <h3>Gráfico de Dona</h3>
+    <canvas id="miGraficoDona" style="max-width: 400px; max-height: 300px;"></canvas>
+    <h3>Gráfico Polar</h3>
+    <canvas id="miGraficoPolar" style="max-width: 400px; max-height: 300px;"></canvas>
+</div>
+
+<div id="año" class="grafico-content" style="display:none;">
+    <h3>Gráfico de Barras por Año de Compra</h3>
+    <canvas id="miGraficoAñoCompra" style="max-width: 500px; max-height: 300px;"></canvas>
+    <h3>Gráfico de Líneas por Año de Compra</h3>
+    <canvas id="miGraficoLineasAñoCompra" style="max-width: 500px; max-height: 300px;"></canvas>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+// Función para cambiar el gráfico visible
+function cambiarGrafico() {
+    var seleccion = document.getElementById("graficoSelector").value;
+    var graficos = document.getElementsByClassName("grafico-content");
+    for (var i = 0; i < graficos.length; i++) {
+        graficos[i].style.display = "none";  
+    }
+    document.getElementById(seleccion).style.display = "block";  
+}
+
+// Mostrar el gráfico de "Por Categoría" por defecto
+document.addEventListener('DOMContentLoaded', function() {
+    cambiarGrafico();
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const categorias = [{% for categoria in libros_por_categoria %}'{{ categoria.nombre }}',{% endfor %}];
+    const datosLibros = [{% for categoria in libros_por_categoria %}{{ categoria.total_libros }},{% endfor %}];
+    const coloresFondo = [
+        'rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)',
+        'rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)', 'rgba(255, 159, 64, 1)'
+    ];
+    const coloresBorde = [
+        'rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)',
+        'rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)', 'rgba(255, 159, 64, 1)'
+    ];
+    const colorBordeNegro = ['rgba(0, 0, 0, 1)'];
+
+    // Gráficos de Por Categoría
+    function initGraficosCategoria() {
+        // Gráfico de Barras por Categoría
+        const ctxBarra = document.getElementById('miGraficoBarra').getContext('2d');
+        new Chart(ctxBarra, {
+            type: 'bar',
+            data: {
+                labels: categorias,
+                datasets: [{
+                    label: "Libros por Categoría",
+                    data: datosLibros,
+                    backgroundColor: coloresFondo,
+                    borderColor: coloresBorde,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1, precision: 0 }
+                    },
+                    x: { title: { display: true, text: 'Categorías de Libros' } }
+                },
+                plugins: {
+                    legend: { display: true, position: 'top' },
+                    title: { display: true, text: 'Número de Libros por Categoría' }
+                }
+            }
+        });
+
+        // Gráfico de Líneas por Categoría
+        const ctxLineas = document.getElementById('miGraficoLineas').getContext('2d');
+        new Chart(ctxLineas, {
+            type: 'line',
+            data: {
+                labels: categorias,
+                datasets: [{
+                    label: 'Libros por Categoría',
+                    data: datosLibros,
+                    backgroundColor: coloresFondo,
+                    borderColor: colorBordeNegro,
+                    borderWidth: 2,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true, ticks: { stepSize: 1, precision: 0 } },
+                    x: { title: { display: true, text: 'Categorías de Libros' } }
+                },
+                plugins: {
+                    legend: { display: true, position: 'top' },
+                    title: { display: true, text: 'Distribución de Libros por Categoría' }
+                }
+            }
+        });
+
+        // Gráfico de Dona
+        const ctxDona = document.getElementById('miGraficoDona').getContext('2d');
+        new Chart(ctxDona, {
+            type: 'doughnut',
+            data: {
+                labels: categorias,
+                datasets: [{
+                    label: 'Libros por Categoría',
+                    data: datosLibros,
+                    backgroundColor: coloresFondo,
+                    borderColor: coloresBorde,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: true, position: 'top' },
+                    title: { display: true, text: 'Proporción de Libros por Categoría' }
+                }
+            }
+        });
+
+        // Gráfico Polar
+        const ctxPolar = document.getElementById('miGraficoPolar').getContext('2d');
+        new Chart(ctxPolar, {
+            type: 'polarArea',
+            data: {
+                labels: categorias,
+                datasets: [{
+                    label: 'Libros por Categoría',
+                    data: datosLibros,
+                    backgroundColor: coloresFondo,
+                    borderColor: coloresBorde,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: true, position: 'top' },
+                    title: { display: true, text: 'Distribución de Libros por Categoría' }
+                }
+            }
+        });
+    }
+
+    // Gráficos de Por Año de Compra
+    function initGraficosAño() {
+        const añosCompra = [{% for item in libros_por_año_compra %}'{{ item.año_compra }}',{% endfor %}];
+        const datosAñoCompra = [{% for item in libros_por_año_compra %}{{ item.total_libros }},{% endfor %}];
+
+        // Gráfico de Barras por Año de Compra
+        const ctxAñoCompra = document.getElementById('miGraficoAñoCompra').getContext('2d');
+        new Chart(ctxAñoCompra, {
+            type: 'bar',
+            data: {
+                labels: añosCompra,
+                datasets: [{
+                    label: "Libros Comprados por Año",
+                    data: datosAñoCompra,
+                    backgroundColor: coloresFondo,
+                    borderColor: coloresBorde,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1, precision: 0 }
+                    },
+                    x: { title: { display: true, text: 'Año de Compra' } }
+                },
+                plugins: {
+                    legend: { display: true, position: 'top' },
+                    title: { display: true, text: 'Número de Libros Comprados por Año' }
+                }
+            }
+        });
+
+        // Gráfico de Líneas por Año de Compra
+        const ctxLineasAñoCompra = document.getElementById('miGraficoLineasAñoCompra').getContext('2d');
+        new Chart(ctxLineasAñoCompra, {
+            type: 'line',
+            data: {
+                labels: añosCompra,
+                datasets: [{
+                    label: 'Libros Comprados por Año',
+                    data: datosAñoCompra,
+                    backgroundColor: coloresFondo,
+                    borderColor: colorBordeNegro,
+                    borderWidth: 2,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true, ticks: { stepSize: 1, precision: 0 } },
+                    x: { title: { display: true, text: 'Año de Compra' } }
+                },
+                plugins: {
+                    legend: { display: true, position: 'top' },
+                    title: { display: true, text: 'Tendencia de Libros Comprados por Año' }
+                }
+            }
+        });
+    }
+
+    // Función para inicializar los gráficos según la selección
+    function initGraficos() {
+        const seleccion = document.getElementById("graficoSelector").value;
+        if (seleccion === "categoria") {
+            initGraficosCategoria();
+        } else {
+            initGraficosAño();
+        }
+    }
+
+    // Inicializar los gráficos al cargar la página
+    initGraficos();
+
+    // Actualizar gráficos al cambiar la selección
+    document.getElementById("graficoSelector").addEventListener("change", initGraficos);
+});
+</script>
+
+{% endblock %}

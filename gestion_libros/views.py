@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages  # Importar el sistema de mensajes de Django
 from .models import Libro, Categoria  # Importar el modelo Libro y Categoria
 from .forms import LibroForm  # Importar el formulario para crear/editar libros
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.http import JsonResponse
 
 
@@ -14,16 +14,9 @@ def is_admin(user):
 
 @login_required
 def libro_list(request):
-    query = request.GET.get(
-        "q"
-    )  # Capturamos el término de búsqueda desde el cuadro de búsqueda
-    sort_by = request.GET.get(
-        "sort", "titulo"
-    )  # Capturamos el criterio de ordenación de la URL (por defecto 'titulo')
-    order = request.GET.get(
-        "order", "asc"
-    )  # Ascendente o descendente, por defecto ascendente
-
+    query = request.GET.get("q")  # Capturamos el término de búsqueda desde el cuadro de búsqueda
+    sort_by = request.GET.get("sort", "titulo")  # Capturamos el criterio de ordenación de la URL (por defecto 'titulo')
+    order = request.GET.get("order", "asc")  # Ascendente o descendente, por defecto ascendente
     categoria_id = request.GET.get("categoria")  # Capturar filtro de categoría
 
     # Obtener la lista completa de libros
@@ -46,17 +39,14 @@ def libro_list(request):
         "categoria": "categoria__nombre",
     }
 
-    # Comprobamos si el campo de ordenación es válido, si no, lo ajustamos a 'titulo'
-    if sort_by in valid_sort_fields:
-        sort_field = valid_sort_fields[sort_by]
-    else:
-        sort_field = "titulo"
+    # Comprobamos si el campo de ordenación es válido
+    sort_field = valid_sort_fields.get(sort_by, "titulo")
 
     # Añadimos el prefijo '-' para ordenar de manera descendente si se especifica
     if order == "desc":
         sort_field = f"-{sort_field}"
 
-    # Ordenamos los libros según el campo especificado
+    # Ordenamos los libros
     libros = libros.order_by(sort_field)
 
     # Obtener todas las categorías para los filtros
@@ -66,7 +56,7 @@ def libro_list(request):
     if categoria_id:
         libros = libros.filter(categoria__id=categoria_id)
 
-    # Renderizamos el template pasando la lista de libros, el criterio de ordenación y las categorías
+    # Renderizamos el template pasando los datos necesarios
     return render(
         request,
         "gestion_libros/libros/libro_list.html",
@@ -134,9 +124,33 @@ def libro_delete(request, pk):
 
 
 # Vista para confirmar la eliminación de un libro
-@login_required
+@user_passes_test(is_admin)
 def libro_confirm_delete(request, id):
     libro = get_object_or_404(Libro, id=id)
     return render(
         request, "gestion_libros/libros/libro_confirm_delete.html", {"libro": libro}
     )
+
+# Vista para ver las estadísticas de libros
+@user_passes_test(is_admin)
+def libro_estadistics(request):
+    # Obtener estadísticas de libros por categoría
+    libros_por_categoria = Categoria.objects.annotate(total_libros=Count('libro'))
+    
+    # Obtener estadísticas de libros por año de compra
+    libros_por_año_compra = (
+        Libro.objects.values('año_compra')
+        .annotate(total_libros=Count('id'))
+        .order_by('año_compra')
+    )
+
+    # Calcular el total de libros para superusuario
+    total_libros = Libro.objects.count()
+    
+    context = {
+        'libros_por_categoria': libros_por_categoria,
+        'libros_por_año_compra': libros_por_año_compra,
+        'total_libros': total_libros,
+    }
+    
+    return render(request, 'gestion_libros/libros/libro_estadistics.html', context)

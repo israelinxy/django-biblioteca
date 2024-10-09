@@ -1,4 +1,5 @@
 from django import forms
+from django.utils import timezone
 from .models import Libro, Autor, Categoria, Editorial
 
 
@@ -48,6 +49,16 @@ class LibroForm(forms.ModelForm):
         help_text="Selecciona una editorial o añade una nueva.",
         widget=forms.Select(attrs={"class": "form-control"}),
     )
+    
+    # Campo de Año de Compra
+    año_compra = forms.IntegerField(
+        required=False,
+        label="Año de Compra",
+        help_text="Introduce el año en que la biblioteca compró este libro.",
+        widget=forms.NumberInput(attrs={"class": "form-control", "placeholder": "Ej: 2023"}),
+        min_value=1900,
+        max_value=timezone.now().year,  # Hasta el año actual
+    )
 
     class Meta:
         model = Libro
@@ -58,6 +69,7 @@ class LibroForm(forms.ModelForm):
             "fecha_publicacion",
             "isbn",
             "editorial",
+            "año_compra",
         ]
         widgets = {
             "autor": forms.Select(attrs={"class": "form-control"}),
