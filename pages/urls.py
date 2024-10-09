@@ -1,12 +1,10 @@
 from django.urls import path
-from . import views  # Importar las vistas de la app
-from .views import home, about, contact, faq
+from .views import HomeView, AboutView, ContactView
 
-app_name = "pages"  # Definición del namespace
+app_name = "pages"  # Namespace para la app pages
 
-# Definición de las rutas de la app `pages`
 urlpatterns = [
-    path("", views.home, name="home"),  # Ruta para la página de inicio
-    path("about/", views.about, name="about"),  # Ruta para la página "Sobre nosotros"
-    path("contact/", views.contact, name="contact"),  # Ruta para la página de contacto
+    path("", HomeView.as_view(), name="home"),  # Ruta para la página de inicio
+    path("sobre/", AboutView.as_view(), name="about"),  # Ruta para la página "Sobre nosotros"
+    path("contacto/", ContactView.as_view(), name="contact"),  # Ruta para la página de contacto
 ]

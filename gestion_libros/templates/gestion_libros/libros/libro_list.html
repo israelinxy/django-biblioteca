@@ -120,6 +120,34 @@
         </tbody>
     </table>
 
+    <!-- Paginación -->
+    <div class="pagination">
+        <!-- Mostrar el número de página actual y el total de páginas -->
+        <span>
+            Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        <!-- Enlaces de navegación -->
+        <div>
+            {% if page_obj.has_previous %}
+                <a href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.previous_page_number }}">Anterior</a>
+            {% endif %}
+
+            <!-- Números de página -->
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <span>{{ num }}</span>
+                {% else %}
+                    <a href="?{% if query %}q={{ query }}&{% endif %}page={{ num }}">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <a href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.next_page_number }}">Siguiente</a>
+            {% endif %}
+        </div>
+    </div>
+
     {% if request.GET.q or request.GET.categoria %}
     <p><a href="{% url 'gestion_libros:libro_list' %}" class="btn btn-secondary">Volver a la lista completa</a></p>
     {% endif %}
