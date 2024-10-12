@@ -1,5 +1,10 @@
 {% extends "base/base.html" %}
+
+{% load i18n %}
+
 {% block content %}
-<h2>Página de Inicio</h2>
-<p>Bienvenido a nuestra biblioteca.</p>
+
+<h2>{% trans "Página de Inicio" %}</h2>
+<p>{% trans "Bienvenido a nuestra biblioteca." %}</p>
+
 {% endblock %}

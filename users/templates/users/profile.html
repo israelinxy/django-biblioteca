@@ -1,14 +1,16 @@
 {% extends 'base/base.html' %}
 
+{% load i18n %}
+
 {% block content %}
 
-<h2>Bienvenido, {{ user.username }}</h2>
+<h2>{% trans "Bienvenido, " %}{{ user.username }}</h2>
 
 <!-- Comprobacion del tipo de usuario autenticado -->
 {% if user.is_superuser %}
-    <strong>¡Eres el superusuario!</strong> Tienes acceso total a la administración del sitio.
+    <strong>{% trans "¡Eres el superusuario!" %}</strong> {% trans "Tienes acceso total a la administración del sitio." %}
 {% else %}
-    <p>Esta es tu página de perfil. Aquí puedes ver tus detalles.</p>
+    <p>{% trans "Esta es tu página de perfil. Aquí puedes ver tus detalles." %}</p>
 {% endif %}
 
 <!-- Mostrar mensajes -->
@@ -20,21 +22,21 @@
     </ul>
 {% endif %}
 
-<p><strong>Usuario:</strong> {{ user.username }}</p>
-<p><strong>Correo electrónico:</strong> {{ user.email }}</p>
+<p><strong>{% trans "Usuario:" %}</strong> {{ user.username }}</p>
+<p><strong>{% trans "Correo electrónico:" %}</strong> {{ user.email }}</p>
 
 <!-- Enlace al listado de libros -->
-<p><a href="{% url 'gestion_libros:libro_list' %}" class="btn btn-primary">Ver listado de libros</a></p>
+<p><a href="{% url 'gestion_libros:libro_list' %}" class="btn btn-primary">{% trans "Ver listado de libros" %}</a></p>
 
 {% if user.is_superuser %}
 <!-- Enlace a las estadísticas de libros -->
-<p><a href="{% url 'gestion_libros:libro_estadistics' %}" class="btn btn-primary">Ver estadísticas de libros</a></p>
+<p><a href="{% url 'gestion_libros:libro_estadistics' %}" class="btn btn-primary">{% trans "Ver estadísticas de libros" %}</a></p>
 {% endif %}
 
 <!-- Botón de logout -->
 <form action="{% url 'users:logout' %}" method="post"> 
     {% csrf_token %}
-    <button type="submit" class="btn btn-danger">Cerrar sesión</button>
+    <button type="submit" class="btn btn-danger">{% trans "Cerrar sesión" %}</button>
 </form>
 
 {% endblock %}

@@ -1,8 +1,10 @@
 {% extends "base/base.html" %}
 
+{% load i18n %}
+
 {% block content %}
 
-<h2>Contacto</h2>
+<h2>{% trans "Contacto" %}</h2>  
 
 {% if messages %}
     <ul class="messages">
@@ -16,9 +18,9 @@
 
 <form method="post">
     {% csrf_token %}
-    <label for="message">Mensaje:</label>
+    <label for="message">{% trans "Mensaje:" %}</label>  
     <textarea id="message" name="message"></textarea>
-    <button type="submit">Enviar</button>
+    <button type="submit">{% trans "Enviar" %}</button>  
 </form>
 
 {% endblock %}

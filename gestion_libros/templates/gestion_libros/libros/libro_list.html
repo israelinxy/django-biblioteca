@@ -1,9 +1,11 @@
 {% extends 'base/base.html' %}
 
-{% block title %}Listado Libros{% endblock %}
+{% load i18n %}
+
+{% block title %}{% trans "Listado Libros" %}{% endblock %}
 
 {% block content %}
-<h2>Listado de Libros</h2>
+<h2>{% trans "Listado de Libros" %}</h2>
 
 {% if messages %}
     <div class="alert-container">
@@ -17,36 +19,36 @@
 
 {% if user.is_authenticated %}
     {% if user.is_superuser %}
-        <p><a href="{% url 'gestion_libros:libro_create' %}" class="btn btn-primary">Añadir nuevo Libro</a></p>
+        <p><a href="{% url 'gestion_libros:libro_create' %}" class="btn btn-primary">{% trans "Añadir nuevo Libro" %}</a></p>
     {% endif %}
 
     <!-- Formulario de búsqueda y filtro por categoría -->
     <form method="GET" action="{% url 'gestion_libros:libro_list' %}">
-        <input type="text" id="search" name="q" placeholder="Buscar por título, autor, apellido, editorial" value="{{ request.GET.q }}">
+        <input type="text" id="search" name="q" placeholder="{% trans 'Buscar por título, autor, apellido, editorial' %}" value="{{ request.GET.q }}">
 
         <!-- Select para filtrar por categoría -->
         <select name="categoria">
-            <option value="">Todas las Categorías</option>
+            <option value="">{% trans "Todas las Categorías" %}</option>
             {% for categoria in categorias %}
                 <option value="{{ categoria.id }}" {% if request.GET.categoria == categoria.id|stringformat:"s" %}selected{% endif %}>{{ categoria.nombre }}</option>
             {% endfor %}
         </select>
 
-        <button type="submit" class="btn btn-primary">Buscar</button>
+        <button type="submit" class="btn btn-primary">{% trans "Buscar" %}</button>
     </form>
 
     {% if request.GET.q or request.GET.categoria %}
-        <p><a href="{% url 'gestion_libros:libro_list' %}" class="btn btn-secondary">Volver a la lista completa</a></p>
+        <p><a href="{% url 'gestion_libros:libro_list' %}" class="btn btn-secondary">{% trans "Volver a la lista completa" %}</a></p>
     {% endif %}
 
     <!-- Tabla con los libros -->
-    <table>
-        <thead>
+    <table class="table">
+        <thead class="thead-dark">
             <tr>
                 <!-- Ordenar por Título -->
                 <th>
                     <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.categoria %}categoria={{ request.GET.categoria }}&{% endif %}sort=titulo&order={% if sort_by == 'titulo' and order == 'asc' %}desc{% else %}asc{% endif %}">
-                        Título
+                        {% trans "Título" %}
                         {% if sort_by == 'titulo' %}
                             {% if order == 'asc' %} ↑ {% else %} ↓ {% endif %}
                         {% endif %}
@@ -56,7 +58,7 @@
                 <!-- Ordenar por Fecha de Publicación -->
                 <th>
                     <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.categoria %}categoria={{ request.GET.categoria }}&{% endif %}sort=fecha_publicacion&order={% if sort_by == 'fecha_publicacion' and order == 'asc' %}desc{% else %}asc{% endif %}">
-                        Fecha de Publicación
+                        {% trans "Fecha de Publicación" %}
                         {% if sort_by == 'fecha_publicacion' %}
                             {% if order == 'asc' %} ↑ {% else %} ↓ {% endif %}
                         {% endif %}
@@ -66,7 +68,7 @@
                 <!-- Ordenar por Editorial -->
                 <th>
                     <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.categoria %}categoria={{ request.GET.categoria }}&{% endif %}sort=editorial&order={% if sort_by == 'editorial' and order == 'asc' %}desc{% else %}asc{% endif %}">
-                        Editorial
+                        {% trans "Editorial" %}
                         {% if sort_by == 'editorial' %}
                             {% if order == 'asc' %} ↑ {% else %} ↓ {% endif %}
                         {% endif %}
@@ -76,25 +78,25 @@
                 <!-- Ordenar por Categoría -->
                 <th>
                     <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.categoria %}categoria={{ request.GET.categoria }}&{% endif %}sort=categoria&order={% if sort_by == 'categoria' and order == 'asc' %}desc{% else %}asc{% endif %}">
-                        Categoría
+                        {% trans "Categoría" %}
                         {% if sort_by == 'categoria' %}
                             {% if order == 'asc' %} ↑ {% else %} ↓ {% endif %}
                         {% endif %}
                     </a>
-                </th>                
-                
+                </th>
+
                 {% if user.is_superuser %}
                 <!-- Ordenar por Año de compra -->
                 <th>
                     <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.categoria %}categoria={{ request.GET.categoria }}&{% endif %}sort=año_compra&order={% if sort_by == 'año_compra' and order == 'asc' %}desc{% else %}asc{% endif %}">
-                        Año Compra
+                        {% trans "Año Compra" %}
                         {% if sort_by == 'año_compra' %}
                             {% if order == 'asc' %} ↑ {% else %} ↓ {% endif %}
                         {% endif %}
                     </a>
                 </th>
 
-                <th>Acciones</th>
+                <th>{% trans "Acciones" %}</th>
                 {% endif %}
             </tr>
         </thead>
@@ -104,15 +106,15 @@
                 <td>{{ libro.titulo }}</td>
                 <td>{{ libro.fecha_publicacion }}</td>
                 <td>{{ libro.editorial.nombre }}</td>
-                <td>{{ libro.categoria.nombre }}</td>                
+                <td>{{ libro.categoria.nombre }}</td>
                 {% if user.is_superuser %}
                 <td>{{ libro.año_compra|default_if_none:"" }}</td>
                 <td>
                     <!-- Botón de editar libro -->
-                    <a href="{% url 'gestion_libros:libro_edit' libro.id %}" class="btn btn-warning">Editar</a>
+                    <a href="{% url 'gestion_libros:libro_edit' libro.id %}" class="btn btn-warning">{% trans "Editar" %}</a>
 
                     <!-- Botón de eliminar que redirige a la vista de confirmación -->
-                    <a href="{% url 'gestion_libros:libro_confirm_delete' libro.id %}" class="btn btn-danger">Eliminar</a>
+                    <a href="{% url 'gestion_libros:libro_confirm_delete' libro.id %}" class="btn btn-danger">{% trans "Eliminar" %}</a>
                 </td>
                 {% endif %}
             </tr>
@@ -124,13 +126,13 @@
     <div class="pagination">
         <!-- Mostrar el número de página actual y el total de páginas -->
         <span>
-            Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
+            {% trans "Página" %} {{ page_obj.number }} {% trans "de" %} {{ page_obj.paginator.num_pages }}.
         </span>
 
         <!-- Enlaces de navegación -->
         <div>
             {% if page_obj.has_previous %}
-                <a href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.previous_page_number }}">Anterior</a>
+                <a href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.previous_page_number }}">{% trans "Anterior" %}</a>
             {% endif %}
 
             <!-- Números de página -->
@@ -143,24 +145,24 @@
             {% endfor %}
 
             {% if page_obj.has_next %}
-                <a href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.next_page_number }}">Siguiente</a>
+                <a href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.next_page_number }}">{% trans "Siguiente" %}</a>
             {% endif %}
         </div>
     </div>
 
     {% if request.GET.q or request.GET.categoria %}
-    <p><a href="{% url 'gestion_libros:libro_list' %}" class="btn btn-secondary">Volver a la lista completa</a></p>
+    <p><a href="{% url 'gestion_libros:libro_list' %}" class="btn btn-secondary">{% trans "Volver a la lista completa" %}</a></p>
     {% endif %}
 
     {% if user.is_superuser %}
-    <p><a href="{% url 'gestion_libros:libro_create' %}" class="btn btn-primary">Añadir nuevo Libro</a></p>
+    <p><a href="{% url 'gestion_libros:libro_create' %}" class="btn btn-primary">{% trans "Añadir nuevo Libro" %}</a></p>
     {% endif %}
 
 {% else %}
-    <p>Debes iniciar sesión para ver el listado de libros.</p>
-    <p><a href="{% url 'login' %}">Iniciar sesión</a></p>
+    <p>{% trans "Debes iniciar sesión para ver el listado de libros." %}</p>
+    <p><a href="{% url 'login' %}">{% trans "Iniciar sesión" %}</a></p>
 {% endif %}
 
-<p><a href="{% url 'users:profile' %}">Volver al Perfil</a></p>
+<p><a href="{% url 'users:profile' %}">{% trans "Volver al Perfil" %}</a></p>
 
 {% endblock %}

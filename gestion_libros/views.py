@@ -1,3 +1,4 @@
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import get_object_or_404, redirect
@@ -19,7 +20,7 @@ class LibroListView(LoginRequiredMixin, ListView):
     template_name = "gestion_libros/libros/libro_list.html"  # El template asociado
     context_object_name = "libros"  # Cómo llamamos la lista de libros en el template
     ordering = ["titulo"]  # Ordenación por defecto
-    paginate_by = 3  # Si quieres paginar los resultados (opcional)
+    paginate_by = 3  # Paginar los resultados
 
     def get_queryset(self):
         """
@@ -80,7 +81,7 @@ class LibroCreateView(LoginRequiredMixin, IsAdminMixin, CreateView):
     success_url = reverse_lazy("gestion_libros:libro_list")  # Redirigir a la lista de libros después de crear
 
     def form_valid(self, form):
-        messages.success(self.request, "El libro se ha creado con éxito.")  # Mensaje de éxito
+        messages.success(self.request, _("El libro se ha creado con éxito."))  # Mensaje de éxito
         return super().form_valid(form)
 
 
@@ -92,7 +93,7 @@ class LibroUpdateView(LoginRequiredMixin, IsAdminMixin, UpdateView):
     success_url = reverse_lazy("gestion_libros:libro_list")  # Redirigir a la lista de libros después de actualizar
 
     def form_valid(self, form):
-        messages.success(self.request, "El libro se ha actualizado con éxito.")  # Mensaje de éxito
+        messages.success(self.request, _("El libro se ha actualizado con éxito."))  # Mensaje de éxito
         return super().form_valid(form)
 
     def get_object(self):
@@ -106,7 +107,7 @@ class LibroDeleteView(LoginRequiredMixin, IsAdminMixin, DeleteView):
     success_url = reverse_lazy("gestion_libros:libro_list")  # Redirigir a la lista de libros después de eliminar
 
     def form_valid(self, form):
-        messages.success(self.request, "El libro se ha eliminado con éxito.")  # Mensaje de éxito
+        messages.success(self.request, _("El libro se ha eliminado con éxito."))  # Mensaje de éxito
         return super().form_valid(form)
 
     def get_object(self):

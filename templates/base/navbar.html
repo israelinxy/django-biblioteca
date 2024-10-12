@@ -1,15 +1,16 @@
+{% load i18n %}
+
 <nav>
   <ul>
-    <li><a href="{% url 'pages:home' %}">Home</a></li>    
-    <li><a href="{% url 'pages:about' %}">Sobre Nosotros</a></li>
-    <li><a href="{% url 'pages:contact' %}">Contacto</a></li>
+    <li><a href="{% url 'pages:home' %}">{% trans "Home" %}</a></li>  
+    <li><a href="{% url 'pages:about' %}">{% trans "Sobre Nosotros" %}</a></li>  
+    <li><a href="{% url 'pages:contact' %}">{% trans "Contacto" %}</a></li>  
 
     {% if user.is_authenticated %}
-      <li><a href="{% url 'users:profile' %}">Perfil</a></li>
+      <li><a href="{% url 'users:profile' %}">{% trans "Perfil" %}</a></li>  
     {% else %}
-      <li><a href="{% url 'users:login' %}">Iniciar Sesión</a></li>
-      <li><a href="{% url 'users:register' %}">Registrarse</a></li>
+      <li><a href="{% url 'users:login' %}">{% trans "Iniciar Sesión" %}</a></li>  
+      <li><a href="{% url 'users:register' %}">{% trans "Registrarse" %}</a></li>  
     {% endif %}
   </ul>
 </nav>
-

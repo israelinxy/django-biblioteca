@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
+from django.utils.translation import gettext as _  # Importar gettext para traducción
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -9,7 +10,7 @@ class CustomUserCreationForm(UserCreationForm):
         required=False,
         help_text="",  # Elimina el texto de ayuda predeterminado
         widget=forms.TextInput(
-            attrs={"class": "form-control", "placeholder": "Nombre"}
+            attrs={"class": "form-control", "placeholder": _("Nombre")}  
         ),
     )
     last_name = forms.CharField(
@@ -17,14 +18,14 @@ class CustomUserCreationForm(UserCreationForm):
         required=False,
         help_text="",  # Elimina el texto de ayuda predeterminado
         widget=forms.TextInput(
-            attrs={"class": "form-control", "placeholder": "Apellido"}
+            attrs={"class": "form-control", "placeholder": _("Apellido")}  
         ),
     )
     email = forms.EmailField(
         required=True,
         help_text="",  # Elimina el texto de ayuda predeterminado
         widget=forms.EmailInput(
-            attrs={"class": "form-control", "placeholder": "Correo Electrónico"}
+            attrs={"class": "form-control", "placeholder": _("Correo Electrónico")}  
         ),
     )
 
@@ -41,25 +42,25 @@ class CustomUserCreationForm(UserCreationForm):
         # Personalización de los widgets para los campos
         widgets = {
             "username": forms.TextInput(
-                attrs={"class": "form-control", "placeholder": "Nombre de usuario"}
+                attrs={"class": "form-control", "placeholder": _("Nombre de usuario")}  
             ),
             "password1": forms.PasswordInput(
-                attrs={"class": "form-control", "placeholder": "Contraseña"}
+                attrs={"class": "form-control", "placeholder": _("Contraseña")}  
             ),
             "password2": forms.PasswordInput(
-                attrs={"class": "form-control", "placeholder": "Confirmar contraseña"}
+                attrs={"class": "form-control", "placeholder": _("Confirmar contraseña")}  
             ),
         }
         labels = {
-            "username": "Usuario",
-            "password1": "Contraseña",
-            "password2": "Confirmar Contraseña",
+            "username": _("Usuario"),  
+            "password1": _("Contraseña"),  
+            "password2": _("Confirmar Contraseña"),  
         }
 
     def clean_email(self):
         email = self.cleaned_data.get("email")
         if User.objects.filter(email=email).exists():
-            raise forms.ValidationError("Este correo ya está registrado.")
+            raise forms.ValidationError(_("Este correo ya está registrado."))  
         return email
 
     def __init__(self, *args, **kwargs):

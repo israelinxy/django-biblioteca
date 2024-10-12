@@ -4,6 +4,7 @@ from django.contrib.auth import login, authenticate
 from django.contrib import messages
 from .forms import CustomUserCreationForm
 from django.contrib.auth.views import LogoutView as DjangoLogoutView
+from django.utils.translation import gettext as _  # Importar gettext para traducción
 
 
 # Vista para iniciar sesión
@@ -19,12 +20,13 @@ class LoginView(View):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            messages.success(request, "Has iniciado sesión con éxito.")
+            messages.success(request, _("Has iniciado sesión con éxito."))  
             return redirect('users:profile')
         else:
-            messages.error(request, "Nombre de usuario o contraseña incorrectos.")
+            messages.error(request, _("Nombre de usuario o contraseña incorrectos."))  
 
         return render(request, 'users/login.html')  # Vuelve a renderizar la plantilla en caso de error
+
 
 # Vista para registrarse
 class RegisterView(View):
@@ -36,7 +38,7 @@ class RegisterView(View):
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, "Registro exitoso. Ya puedes iniciar sesión.")
+            messages.success(request, _("Registro exitoso. Ya puedes iniciar sesión."))  
             return redirect('users:login')
         return render(request, 'users/register.html', {'form': form})
 
@@ -50,5 +52,5 @@ class ProfileView(View):
 # Vista para cerrar sesión
 class LogoutView(DjangoLogoutView):
     def get(self, request, *args, **kwargs):
-        messages.success(request, "Has cerrado sesión con éxito.")
+        messages.success(request, _("Has cerrado sesión con éxito."))  
         return super().get(request, *args, **kwargs)

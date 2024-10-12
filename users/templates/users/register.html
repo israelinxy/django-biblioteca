@@ -1,8 +1,10 @@
 {% extends "base/base.html" %}
 
+{% load i18n %}
+
 {% block content %}
 
-<h2>Registrarse</h2>
+<h2>{% trans "Registrarse" %}</h2>
 
 <form method="POST">
     {% csrf_token %}
@@ -17,7 +19,7 @@
         </div>
     {% endfor %}
 
-    <button type="submit" class="btn btn-primary">Registrarse</button>
+    <button type="submit" class="btn btn-primary">{% trans "Registrarse" %}</button>
 </form>
 
 {% endblock %}

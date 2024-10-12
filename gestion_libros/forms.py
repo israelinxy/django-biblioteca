@@ -1,5 +1,6 @@
 from django import forms
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _  # Importamos gettext_lazy para las traducciones
 from .models import Libro, Autor, Categoria, Editorial
 
 
@@ -7,55 +8,54 @@ class LibroForm(forms.ModelForm):
     nuevo_autor = forms.CharField(
         required=False,
         max_length=100,
-        label="Nuevo Autor",
-        help_text="Añade un nuevo autor si no está en la lista.",
+        label=_("Nuevo Autor"),
+        help_text=_("Añade un nuevo autor si no está en la lista."), 
         widget=forms.TextInput(attrs={"class": "form-control"}),
     )
     nueva_categoria = forms.CharField(
         required=False,
         max_length=100,
-        label="Nueva Categoría",
-        help_text="Añade una nueva categoría si no está en la lista.",
+        label=_("Nueva Categoría"), 
+        help_text=_("Añade una nueva categoría si no está en la lista."), 
         widget=forms.TextInput(attrs={"class": "form-control"}),
     )
     nueva_editorial = forms.CharField(
         required=False,
         max_length=100,
-        label="Nueva Editorial",
-        help_text="Añade una nueva editorial si no está en la lista.",
+        label=_("Nueva Editorial"), 
+        help_text=_("Añade una nueva editorial si no está en la lista."), 
         widget=forms.TextInput(attrs={"class": "form-control"}),
     )
     fecha_publicacion = forms.IntegerField(
         required=False,
-        label="Año de Publicación",
-        help_text="Introduce solo el año de publicación.",
+        label=_("Año de Publicación"), 
+        help_text=_("Introduce solo el año de publicación."), 
         widget=forms.NumberInput(
-            attrs={"class": "form-control", "placeholder": "Ej: 2024"}
+            attrs={"class": "form-control", "placeholder": _("Ej: 2024")} 
         ),
         min_value=1000,
         max_value=9999,
     )
     isbn = forms.CharField(
         required=False,
-        label="ISBN",
-        help_text="Introduce el ISBN del libro (13 caracteres).",
+        label=_("ISBN"), 
+        help_text=_("Introduce el ISBN del libro (13 caracteres)."), 
         widget=forms.TextInput(attrs={"class": "form-control"}),
         max_length=13,
     )
     editorial = forms.ModelChoiceField(
         queryset=Editorial.objects.all(),
         required=False,
-        label="Editorial",
-        help_text="Selecciona una editorial o añade una nueva.",
+        label=_("Editorial"), 
+        help_text=_("Selecciona una editorial o añade una nueva."), 
         widget=forms.Select(attrs={"class": "form-control"}),
     )
-    
-    # Campo de Año de Compra
+
     año_compra = forms.IntegerField(
         required=False,
-        label="Año de Compra",
-        help_text="Introduce el año en que la biblioteca compró este libro.",
-        widget=forms.NumberInput(attrs={"class": "form-control", "placeholder": "Ej: 2023"}),
+        label=_("Año de Compra"), 
+        help_text=_("Introduce el año en que la biblioteca compró este libro."), 
+        widget=forms.NumberInput(attrs={"class": "form-control", "placeholder": _("Ej: 2023")}), 
         min_value=1900,
         max_value=timezone.now().year,  # Hasta el año actual
     )
@@ -93,19 +93,19 @@ class LibroForm(forms.ModelForm):
         # Validación: al menos un campo de autor debe estar lleno
         if not autor and not nuevo_autor:
             raise forms.ValidationError(
-                "Debes seleccionar un autor o añadir uno nuevo."
+                _("Debes seleccionar un autor o añadir uno nuevo.") 
             )
 
         # Validación: al menos un campo de categoría debe estar lleno
         if not categoria and not nueva_categoria:
             raise forms.ValidationError(
-                "Debes seleccionar una categoría o añadir una nueva."
+                _("Debes seleccionar una categoría o añadir una nueva.") 
             )
 
         # Validación: al menos un campo de editorial debe estar lleno
         if not editorial and not nueva_editorial:
             raise forms.ValidationError(
-                "Debes seleccionar una editorial o añadir una nueva."
+                _("Debes seleccionar una editorial o añadir una nueva.") 
             )
 
         return cleaned_data

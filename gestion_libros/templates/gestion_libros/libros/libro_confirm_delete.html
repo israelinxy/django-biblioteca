@@ -1,16 +1,18 @@
 {% extends 'base/base.html' %}
 
-{% block title %}Eliminar Libro{% endblock %}
+{% load i18n %}
+
+{% block title %}{% trans "Eliminar Libro" %}{% endblock %}
 
 {% block content %}
 
-<h2>¿Estás seguro de que quieres eliminar "{{ libro.titulo }}"?</h2>
+<h2>{% blocktrans with titulo=libro.titulo %}¿Estás seguro de que quieres eliminar "{{ titulo }}"?{% endblocktrans %}</h2>
 
 <form method="POST" action="{% url 'gestion_libros:libro_delete' libro.id %}">
     {% csrf_token %}
-    <button type="submit" class="btn btn-danger">Si</button>
+    <button type="submit" class="btn btn-danger">{% trans "Sí" %}</button>
 </form>
 
-<p><a href="{% url 'gestion_libros:libro_list' %}" class="btn btn-secondary">Cancelar</a></p>
+<p><a href="{% url 'gestion_libros:libro_list' %}" class="btn btn-secondary">{% trans "Cancelar" %}</a></p>
 
 {% endblock %}
